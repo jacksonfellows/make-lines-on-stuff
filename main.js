@@ -25,6 +25,7 @@ let SCALE_X_P1 = 3;
 let SCALE_X_P2 = 4;
 let SCALE_Y_P1 = 5;
 let SCALE_Y_P2 = 6;
+let TRACING    = 7;
 
 let prev_p;
 let prev_input;
@@ -92,10 +93,15 @@ canvas.onclick = e => {
 	}
 };
 
+let trace_output = '';
+
 canvas.onmousemove = e => {
 	let p = getCoords(e);
 	let [x,y] = transform(p);
 	document.getElementById('coords').innerText = x.toFixed(3) + ',' + y.toFixed(3);
+	if (state == TRACING) {
+		trace_output += x.toFixed(3) + ',' + y.toFixed(3) + '\n';
+	}
 };
 
 document.onkeydown = e => {
@@ -108,11 +114,19 @@ document.onkeydown = e => {
 	case 'w': ctx.strokeStyle = 'white'; break;
 	default:
 		switch (state) {
+		case TRACING:
+			switch (k) {
+			case 't':
+				console.log(trace_output);
+				state = WAITING;
+				break;
+			}
 		case WAITING:
 			switch (k) {
 			case 'l': state = LINE_P1; break;
 			case 'x': state = SCALE_X_P1; break;
 			case 'y': state = SCALE_Y_P1; break;
+			case 't': state = TRACING; trace_output = ''; break;
 			}
 		}
 		break;
